@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/logo.svg" alt="OpenOSINT" width="320">
+  <img src="docs/logo.svg" alt="OpenOSINT" width="320" style="background-color:white;">
 </div>
 
 <br>
