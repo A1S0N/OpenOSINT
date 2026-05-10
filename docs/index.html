@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>openosint(1)</title>
+<meta name="description" content="OpenOSINT — MCP-native Open Source Intelligence framework. 9 tools, autonomous investigations from your terminal.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -14,11 +15,13 @@
 <a href="#description">DESCRIPTION</a>
 <a href="#architecture">ARCHITECTURE</a>
 <a href="#installation">INSTALLATION</a>
-<a href="#configuration">CONFIGURATION</a>
+<a href="#tools">TOOLS</a>
 <a href="#commands">COMMANDS</a>
+<a href="#configuration">CONFIGURATION</a>
 <a href="#examples">EXAMPLES</a>
 <a href="#files">FILES</a>
 <a href="#exit">EXIT STATUS</a>
+<a href="#legal">LEGAL</a>
 <a href="#license">LICENSE</a>
 </div>
 
@@ -50,93 +53,216 @@ openosint username <u>handle</u> [<b>-t</b> <u>seconds</u>]</pre>
 
 <h2 id="description">DESCRIPTION</h2>
 <div class="indent">
-<p>
-<b>openosint</b> is a modular OSINT framework that exposes real-world
-intelligence-gathering tools to large language models via the
-Anthropic Model Context Protocol (MCP). It also operates as a
-conventional command-line interface for direct human execution.
-</p>
-<p>
-The framework is built on a non-blocking asynchronous runtime
-(Python <code>asyncio</code>) to ensure that long-running subprocess
-calls do not block the agent reasoning loop. All external binaries
-are invoked as managed subprocesses with hard timeout enforcement.
-</p>
-<p>
-<b>openosint</b> does not embed an LLM. It provides the tool surface
-that an MCP-compatible client (Claude Code, Claude Desktop) connects
-to and drives autonomously.
-</p>
+<p><b>openosint</b> is a modular OSINT framework that exposes 9 intelligence-gathering tools to large language models via the Anthropic Model Context Protocol (MCP). It also operates as a conventional command-line interface for direct human execution.</p>
+<p>The framework is built on a non-blocking asynchronous runtime (Python <code>asyncio</code>). All external binaries are invoked as managed subprocesses with hard timeout enforcement. No LLM is embedded — <b>openosint</b> provides the tool surface that an MCP-compatible client drives autonomously.</p>
 </div>
 
 <h2 id="architecture">ARCHITECTURE</h2>
 <div class="indent">
-<p>The project is divided into three strictly separated layers:</p>
 <table>
-<tr>
-<th>Layer</th>
-<th>Location</th>
-<th>Responsibility</th>
-</tr>
-<tr>
-<td>Core tools</td>
-<td><code>openosint/tools/</code></td>
-<td>Async wrappers around external OSINT binaries. No I/O, no UI.</td>
-</tr>
-<tr>
-<td>MCP server</td>
-<td><code>openosint/mcp_server.py</code></td>
-<td>Translates core functions into MCP tool schemas. Routes LLM calls.</td>
-</tr>
-<tr>
-<td>CLI</td>
-<td><code>openosint/cli.py</code></td>
-<td>Human-facing interface. Calls core tools directly.</td>
-</tr>
+<tr><th>Layer</th><th>Location</th><th>Responsibility</th></tr>
+<tr><td>Core tools</td><td><code>openosint/tools/</code></td><td>Async wrappers around external OSINT binaries and APIs. No I/O, no UI.</td></tr>
+<tr><td>MCP server</td><td><code>openosint/mcp_server.py</code></td><td>Translates core functions into MCP tool schemas. Routes LLM calls.</td></tr>
+<tr><td>CLI</td><td><code>openosint/cli.py</code></td><td>Human-facing interface. Calls core tools directly.</td></tr>
 </table>
-<p>
-No layer imports from a layer above it. The core tools are
-stateless and have no knowledge of MCP or argparse.
-</p>
+<p>No layer imports from a layer above it. Core tools are stateless and have no knowledge of MCP or argparse.</p>
 </div>
 
 <h2 id="installation">INSTALLATION</h2>
 <div class="indent">
-<p>Requires Python 3.10 or later. Installation from source is the recommended method.</p>
+<p>Requires Python 3.10 or later.</p>
 <pre>$ git clone https://github.com/OpenOSINT/OpenOSINT.git
 $ cd OpenOSINT
 $ pip install -e .</pre>
-<p>The following external binaries must be present in <code>PATH</code>:</p>
+
+<p><b>External dependencies</b> (must be present in <code>PATH</code>):</p>
 <table>
 <tr><th>Binary</th><th>Purpose</th><th>Install</th></tr>
-<tr>
-<td><code>holehe</code></td>
-<td>Email account enumeration</td>
-<td><code>pip install holehe</code></td>
-</tr>
-<tr>
-<td><code>sherlock</code></td>
-<td>Username enumeration (300+ platforms)</td>
-<td><code>pip install sherlock-project</code></td>
-</tr>
+<tr><td><code>holehe</code></td><td>Email account enumeration</td><td><code>pip install holehe</code></td></tr>
+<tr><td><code>sherlock</code></td><td>Username enumeration (300+ platforms)</td><td><code>pip install sherlock-project</code></td></tr>
+<tr><td><code>sublist3r</code></td><td>Subdomain enumeration</td><td><code>pip install sublist3r</code></td></tr>
+<tr><td><code>phoneinfoga</code></td><td>Phone number intelligence</td><td><a href="https://github.com/sundowndev/phoneinfoga/releases" target="_blank" rel="noopener">Download binary</a></td></tr>
 </table>
-<p>
-If a binary is absent, the corresponding tool returns a descriptive
-error string rather than raising an unhandled exception. The server
-and CLI remain operational for tools with satisfied dependencies.
-</p>
+
+<p><b>Optional environment variables:</b></p>
+<table>
+<tr><th>Variable</th><th>Tool</th><th>Purpose</th></tr>
+<tr><td><code>HIBP_API_KEY</code></td><td><code>search_breach</code></td><td>HaveIBeenPwned API key — <a href="https://haveibeenpwned.com/API/Key" target="_blank" rel="noopener">get one here</a></td></tr>
+<tr><td><code>IPINFO_TOKEN</code></td><td><code>search_ip</code></td><td>ipinfo.io token for higher rate limits</td></tr>
+</table>
+</div>
+
+<h2 id="tools">TOOLS</h2>
+<div class="indent">
+
+<p>Quick reference:</p>
+<table>
+<tr><th>Tool</th><th>Method</th><th>What it finds</th></tr>
+<tr><td><code>search_email</code></td><td>holehe</td><td>Social accounts linked to an email</td></tr>
+<tr><td><code>search_username</code></td><td>sherlock</td><td>Accounts across 300+ platforms</td></tr>
+<tr><td><code>search_breach</code></td><td>HaveIBeenPwned API</td><td>Data breach exposure and leaked data</td></tr>
+<tr><td><code>search_whois</code></td><td>python-whois</td><td>Domain registrant, registrar, dates</td></tr>
+<tr><td><code>search_ip</code></td><td>ipinfo.io</td><td>Geolocation, ASN, hostname</td></tr>
+<tr><td><code>search_domain</code></td><td>sublist3r</td><td>Subdomain enumeration</td></tr>
+<tr><td><code>generate_dorks</code></td><td>built-in</td><td>12 targeted Google dork URLs</td></tr>
+<tr><td><code>search_paste</code></td><td>psbdmp.ws</td><td>Pastebin dump mentions</td></tr>
+<tr><td><code>search_phone</code></td><td>phoneinfoga</td><td>Carrier, country, line type</td></tr>
+</table>
+
+<hr>
+
+<h3>search_email</h3>
+<p>Enumerates online services and social accounts associated with an email address using <a href="https://github.com/megadose/holehe" target="_blank" rel="noopener">holehe</a>.</p>
+<p><b>MCP parameter:</b> <code>email</code> (string, required)</p>
+<p><b>CLI:</b></p>
+<pre>$ openosint email target@example.com
+$ openosint email target@example.com -t 60</pre>
+<p><b>Example output:</b></p>
+<pre>OSINT results for 'target@example.com':
+
+[+] Spotify        https://open.spotify.com/user/target
+[+] WordPress      https://wordpress.com/target
+[+] Gravatar       https://gravatar.com/target
+[+] Office365      email used</pre>
+
+<hr>
+
+<h3>search_username</h3>
+<p>Searches for a username across 300+ platforms using <a href="https://github.com/sherlock-project/sherlock" target="_blank" rel="noopener">sherlock</a>.</p>
+<p><b>MCP parameter:</b> <code>username</code> (string, required)</p>
+<p><b>CLI:</b></p>
+<pre>$ openosint username johndoe99
+$ openosint username johndoe99 -t 120</pre>
+<p><b>Example output:</b></p>
+<pre>OSINT results for username 'johndoe99':
+
+[+] GitHub         https://github.com/johndoe99
+[+] Twitter        https://twitter.com/johndoe99
+[+] Reddit         https://reddit.com/user/johndoe99
+[+] HackerNews     https://news.ycombinator.com/user?id=johndoe99</pre>
+
+<hr>
+
+<h3>search_breach</h3>
+<p>Checks if an email appears in known public data breaches via the <a href="https://haveibeenpwned.com/API/v3" target="_blank" rel="noopener">HaveIBeenPwned v3 API</a>.</p>
+<p><b>Requires:</b> <code>HIBP_API_KEY</code> environment variable.</p>
+<p><b>MCP parameter:</b> <code>email</code> (string, required)</p>
+<p><b>Example output:</b></p>
+<pre>Found in 2 breach(es) for 'target@example.com':
+
+[+] LinkedIn (2016-05-05) — leaked: Email addresses, Passwords, Names
+[+] Adobe (2013-10-04) — leaked: Email addresses, Password hints, Usernames</pre>
+
+<hr>
+
+<h3>search_whois</h3>
+<p>Retrieves WHOIS registration data for a domain using <a href="https://github.com/richardpenman/whois" target="_blank" rel="noopener">python-whois</a>.</p>
+<p><b>MCP parameter:</b> <code>domain</code> (string, required) — e.g. <code>example.com</code></p>
+<p><b>Example output:</b></p>
+<pre>WHOIS results for 'example.com':
+
+[+] Domain: EXAMPLE.COM
+[+] Registrar: ICANN
+[+] Created: 1995-08-14
+[+] Expires: 2024-08-13
+[+] Name Servers: A.IANA-SERVERS.NET, B.IANA-SERVERS.NET
+[+] Emails: abuse@iana.org</pre>
+
+<hr>
+
+<h3>search_ip</h3>
+<p>Retrieves geolocation, ASN, hostname, and organisation data for an IP address via <a href="https://ipinfo.io" target="_blank" rel="noopener">ipinfo.io</a>. Free tier: 50k requests/month. Set <code>IPINFO_TOKEN</code> for higher limits.</p>
+<p><b>MCP parameter:</b> <code>ip</code> (string, required) — e.g. <code>8.8.8.8</code></p>
+<p><b>Example output:</b></p>
+<pre>IP intelligence for '8.8.8.8':
+
+[+] Ip: 8.8.8.8
+[+] Hostname: dns.google
+[+] Org: AS15169 Google LLC
+[+] City: Mountain View
+[+] Region: California
+[+] Country: US
+[+] Loc: 37.4056,-122.0775
+[+] Timezone: America/Los_Angeles</pre>
+
+<hr>
+
+<h3>search_domain</h3>
+<p>Enumerates subdomains of a target domain using <a href="https://github.com/aboul3la/Sublist3r" target="_blank" rel="noopener">sublist3r</a>.</p>
+<p><b>MCP parameter:</b> <code>domain</code> (string, required) — e.g. <code>example.com</code></p>
+<p><b>Example output:</b></p>
+<pre>Subdomains found for 'example.com':
+
+[+] mail.example.com
+[+] dev.example.com
+[+] staging.example.com
+[+] api.example.com</pre>
+
+<hr>
+
+<h3>generate_dorks</h3>
+<p>Generates 12 targeted Google dork URLs for any target string (name, email, username, or domain). No network calls — returns URLs ready to open in a browser.</p>
+<p><b>MCP parameter:</b> <code>target</code> (string, required) — any target string</p>
+<p><b>Example output:</b></p>
+<pre>Google dork URLs for 'johndoe':
+
+[+] "johndoe"
+    https://www.google.com/search?q=%22johndoe%22
+
+[+] "johndoe" site:linkedin.com
+    https://www.google.com/search?q=%22johndoe%22+site%3Alinkedin.com
+
+[+] "johndoe" leaked OR breach OR dump
+    https://www.google.com/search?q=%22johndoe%22+leaked+OR+breach+OR+dump</pre>
+
+<hr>
+
+<h3>search_paste</h3>
+<p>Searches Pastebin dumps for mentions of an email address or username via the <a href="https://psbdmp.ws" target="_blank" rel="noopener">psbdmp.ws</a> public API.</p>
+<p><b>MCP parameter:</b> <code>query</code> (string, required) — email or username</p>
+<p><b>Example output:</b></p>
+<pre>Found in 3 paste(s) for 'target@example.com':
+
+[+] https://pastebin.com/aB1cD2eF (2023-04-12)
+[+] https://pastebin.com/xY3zA4bC (2022-11-08)
+[+] https://pastebin.com/mN5oP6qR (2021-07-30)</pre>
+
+<hr>
+
+<h3>search_phone</h3>
+<p>Gathers carrier, country, and line type data for a phone number using <a href="https://github.com/sundowndev/phoneinfoga" target="_blank" rel="noopener">phoneinfoga</a>. Phone number must be in E.164 format.</p>
+<p><b>MCP parameter:</b> <code>phone</code> (string, required) — e.g. <code>+14155552671</code></p>
+<p><b>Example output:</b></p>
+<pre>Phone intelligence for '+14155552671':
+
+[+] International format: +1 415-555-2671
+[+] Country: United States
+[+] Carrier: AT&amp;T
+[+] Line type: Mobile</pre>
+
+</div><!-- end tools -->
+
+<h2 id="commands">COMMANDS</h2>
+<div class="indent">
+<p><b>email</b> <u>ADDRESS</u> [<b>-t</b> <u>SECONDS</u>]</p>
+<p>Enumerate services registered against <u>ADDRESS</u> using holehe. Default timeout: 120s.</p>
+<p><b>username</b> <u>HANDLE</u> [<b>-t</b> <u>SECONDS</u>]</p>
+<p>Enumerate platforms where <u>HANDLE</u> is registered using sherlock. Default timeout: 180s.</p>
+<table>
+<tr><th>Flag</th><th>Description</th></tr>
+<tr><td><code>-v, --verbose</code></td><td>Enable debug-level logging to stderr.</td></tr>
+<tr><td><code>-t, --timeout N</code></td><td>Override default subprocess timeout (seconds).</td></tr>
+</table>
 </div>
 
 <h2 id="configuration">CONFIGURATION</h2>
 <div class="indent">
 <p><b>Claude Code</b></p>
-<p>Register the MCP server with Claude Code by providing the absolute path to the entry point:</p>
-<pre>$ claude mcp add openosint python /absolute/path/to/OpenOSINT/openosint/mcp_server.py</pre>
-<p>Verify registration:</p>
-<pre>$ claude mcp list</pre>
+<pre>$ claude mcp add openosint python /absolute/path/to/OpenOSINT/openosint/mcp_server.py
+$ claude mcp list</pre>
 
 <p><b>Claude Desktop</b></p>
-<p>Add the following block to <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
+<p>Add to <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>:</p>
 <pre>{
   "mcpServers": {
     "openosint": {
@@ -147,46 +273,14 @@ and CLI remain operational for tools with satisfied dependencies.
 }</pre>
 </div>
 
-<h2 id="commands">COMMANDS</h2>
-<div class="indent">
-<table>
-<tr><th>Command</th><th>Description</th><th>Default timeout</th></tr>
-<tr>
-<td><code>email <u>ADDRESS</u></code></td>
-<td>Enumerate services registered against an email address via holehe.</td>
-<td>120s</td>
-</tr>
-<tr>
-<td><code>username <u>HANDLE</u></code></td>
-<td>Enumerate platforms where a username is registered via sherlock.</td>
-<td>180s</td>
-</tr>
-</table>
-
-<p>Global flags:</p>
-<table>
-<tr><th>Flag</th><th>Description</th></tr>
-<tr><td><code>-v, --verbose</code></td><td>Enable debug-level logging to stderr.</td></tr>
-<tr><td><code>-t, --timeout <u>N</u></code></td><td>Override default subprocess timeout (seconds).</td></tr>
-</table>
-</div>
-
 <h2 id="examples">EXAMPLES</h2>
 <div class="indent">
-<p>Enumerate services for an email address with a 60-second limit:</p>
 <pre>$ openosint email target@example.com -t 60</pre>
-
-<p>Search for a username across all supported platforms:</p>
 <pre>$ openosint username johndoe99</pre>
-
-<p>Enable verbose output for debugging a failing scan:</p>
 <pre>$ openosint -v email target@example.com</pre>
-
-<p>Agentic execution via Claude Code after MCP registration:</p>
 <pre>$ claude
 &gt; Investigate target@example.com. If you find an associated
-  username, trace it across other platforms.
-</pre>
+  username, trace it across other platforms and compile a report.</pre>
 </div>
 
 <h2 id="files">FILES</h2>
@@ -197,6 +291,13 @@ and CLI remain operational for tools with satisfied dependencies.
 <tr><td><code>openosint/cli.py</code></td><td>CLI entry point.</td></tr>
 <tr><td><code>openosint/tools/search_email.py</code></td><td>Email enumeration module.</td></tr>
 <tr><td><code>openosint/tools/search_username.py</code></td><td>Username enumeration module.</td></tr>
+<tr><td><code>openosint/tools/search_breach.py</code></td><td>Data breach check module.</td></tr>
+<tr><td><code>openosint/tools/search_whois.py</code></td><td>WHOIS lookup module.</td></tr>
+<tr><td><code>openosint/tools/search_ip.py</code></td><td>IP intelligence module.</td></tr>
+<tr><td><code>openosint/tools/search_domain.py</code></td><td>Subdomain enumeration module.</td></tr>
+<tr><td><code>openosint/tools/generate_dorks.py</code></td><td>Google dork URL generator.</td></tr>
+<tr><td><code>openosint/tools/search_paste.py</code></td><td>Pastebin dump search module.</td></tr>
+<tr><td><code>openosint/tools/search_phone.py</code></td><td>Phone intelligence module.</td></tr>
 <tr><td><code>openosint/tools/exceptions.py</code></td><td>Shared exception hierarchy.</td></tr>
 <tr><td><code>pyproject.toml</code></td><td>Project metadata and build configuration (PEP 621).</td></tr>
 <tr><td><code>DISCLAIMER.md</code></td><td>Legal notice and ethical use policy.</td></tr>
@@ -213,31 +314,35 @@ and CLI remain operational for tools with satisfied dependencies.
 </table>
 </div>
 
+<h2 id="legal">LEGAL &amp; ETHICS</h2>
+<div class="indent">
+<p><b>openosint</b> is provided for authorised security research, penetration testing, and investigative journalism only. Users are solely responsible for compliance with applicable local, national, and international law, including GDPR, CCPA, and the Computer Fraud and Abuse Act.</p>
+<table>
+<tr><th>Permitted</th><th>Prohibited</th></tr>
+<tr><td>Authorised penetration testing</td><td>Stalking or harassment</td></tr>
+<tr><td>Investigating your own accounts</td><td>Doxxing or targeted exposure</td></tr>
+<tr><td>Journalistic investigation</td><td>Unauthorised surveillance</td></tr>
+<tr><td>Law enforcement with legal basis</td><td>Identity theft or fraud</td></tr>
+</table>
+<p>See <a href="https://github.com/OpenOSINT/OpenOSINT/blob/main/DISCLAIMER.md" target="_blank" rel="noopener">DISCLAIMER.md</a> for the full legal notice.</p>
+</div>
+
 <h2 id="license">LICENSE</h2>
 <div class="indent">
-<p>
-Released under the MIT License. See <code>LICENSE</code> in the
-source distribution.
-</p>
-<p>
-<b>openosint</b> is provided for authorised security research,
-penetration testing, and investigative journalism only.
-Users are solely responsible for compliance with applicable law.
-See <code>DISCLAIMER.md</code> for the full legal notice.
-</p>
+<p>Released under the MIT License. See <code>LICENSE</code> in the source distribution.</p>
 </div>
 
 <hr>
 <div id="footer">
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
-<td class="mhead-l">OpenOSINT 2.0.0</td>
-<td class="mhead-c">May 10, 2026</td>
+<td class="mhead-l">OpenOSINT 2.1.0</td>
+<td class="mhead-c">May 11, 2026</td>
 <td class="mhead-r">OPENOSINT(1)</td>
 </tr>
 </table>
 </div>
 
-</div><!-- #content -->
+</div>
 </body>
 </html>
