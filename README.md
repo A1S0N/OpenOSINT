@@ -1,8 +1,13 @@
 <div align="center">
-  <img src="docs/logo.svg" alt="OpenOSINT" width="320" style="background-color:white;">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo.svg">
+    <source media="(prefers-color-scheme: light)" srcset="docs/logo.svg">
+    <img alt="OpenOSINT" src="docs/logo.svg" width="320" style="background-color: white; border-radius: 8px; padding: 10px;">
+  </picture>
 </div>
 
 <br>
+
 
 # OPENOSINT(1) &mdash; General Commands Manual
 
