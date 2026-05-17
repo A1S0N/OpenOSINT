@@ -26,7 +26,7 @@ import json
 import logging
 import sys
 
-from openosint.json_output import format_tool_result, to_json
+from openosint.json_output import format_tool_result
 from openosint.tools.search_breach import run_breach_osint
 from openosint.tools.search_email import run_email_osint
 from openosint.tools.search_paste import run_paste_osint

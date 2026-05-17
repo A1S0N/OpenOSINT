@@ -158,7 +158,7 @@ def display_session_detail(session: dict[str, Any], index: int, console: Any) ->
     lines = [
         f"[bold]Date:[/]      {session.get('timestamp', '')}",
         f"[bold]Duration:[/]  {_fmt_duration(session.get('duration_seconds', 0))}",
-        f"[bold]Prompts:[/]",
+        "[bold]Prompts:[/]",
         *[f"  • {p}" for p in prompts],
         f"[bold]Targets:[/]   {', '.join(targets) or '—'}",
         f"[bold]Tools:[/]     {', '.join(tools) or '—'}",

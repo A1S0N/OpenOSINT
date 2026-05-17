@@ -25,6 +25,8 @@ ALL_TOOLS = [
     "generate_dorks",
     "search_paste",
     "search_phone",
+    "search_shodan",
+    "search_virustotal",
 ]
 
 

@@ -29,7 +29,6 @@ from rich import box
 from rich.console import Console
 from rich.markdown import Markdown
 from rich.panel import Panel
-from rich.text import Text
 
 from openosint.agent import OllamaAgent, OpenOSINTAgent
 
@@ -60,7 +59,7 @@ def _print_banner(provider: str, model: str) -> None:
 
     console.print()
     console.print(Panel.fit(
-        f"[bold #00ff88]OpenOSINT[/] [dim]v2.6.0[/]  [dim]·[/]  {provider_info}",
+        f"[bold #00ff88]OpenOSINT[/] [dim]v2.7.0[/]  [dim]·[/]  {provider_info}",
         border_style="#1e293b",
         padding=(0, 2),
     ))
@@ -178,7 +177,7 @@ def _print_config(
     else:
         rows.append(f"[bold]Ollama:[/]   {ollama_host}")
     rows += [
-        f"[bold]Reports:[/]  ./reports/",
+        "[bold]Reports:[/]  ./reports/",
         f"[bold]PDF:[/]      {'disabled' if no_pdf else 'enabled'}",
     ]
     console.print()
