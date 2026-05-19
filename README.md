@@ -470,6 +470,49 @@ Requires `CENSYS_API_ID` and `CENSYS_SECRET` environment variables.
 
 ---
 
+### search_ip2location
+
+Queries the [IP2Location.io](https://www.ip2location.io) API for enhanced IP intelligence. Returns geolocation (country, region, city, coordinates, ZIP), ISP, domain, and ASN. On the Security Plan, also detects whether the address is a VPN, proxy, Tor exit node, or datacenter host. Sponsored integration.
+
+**MCP parameter:** `ip` (string, required) — IPv4 or IPv6 address
+
+**Requires:** `IP2LOCATION_API_KEY` environment variable — [get one here](https://www.ip2location.io/pricing)
+
+**CLI:**
+```bash
+$ openosint ip2location 8.8.8.8
+$ openosint ip2location 2001:4860:4860::8888
+$ openosint ip2location 8.8.8.8 -t 30
+```
+
+**Output:**
+```
+[IP2Location] IP: 8.8.8.8
+[IP2Location] Country: United States (US)
+[IP2Location] Region: California
+[IP2Location] City: Mountain View
+[IP2Location] Latitude: 37.38605
+[IP2Location] Longitude: -122.08385
+[IP2Location] ZIP: 94035
+[IP2Location] ISP: Google LLC
+[IP2Location] Domain: google.com
+[IP2Location] ASN: AS15169 Google LLC
+[IP2Location] Proxy: No
+[IP2Location] VPN: No
+[IP2Location] TOR: No
+[IP2Location] Datacenter: Yes
+[IP2Location] Threat: clean
+```
+
+If a VPN, proxy, or Tor exit node is detected:
+```
+⚠️  FLAGGED: VPN/Proxy/Tor detected
+```
+
+Requires `IP2LOCATION_API_KEY` environment variable.
+
+---
+
 ## DIRECT CLI COMMANDS
 
 ```
@@ -609,6 +652,7 @@ $ claude
 | `openosint/tools/search_shodan.py` | Shodan host/search lookup. |
 | `openosint/tools/search_virustotal.py` | VirusTotal IP/domain/URL/hash lookup. |
 | `openosint/tools/search_censys.py` | Censys IP host view and domain certificate search. |
+| `openosint/tools/search_ip2location.py` | IP2Location enhanced IP intelligence (geolocation, ISP, VPN/Proxy/Tor/Datacenter). |
 | `openosint/tools/exceptions.py` | Shared exception hierarchy. |
 | `pyproject.toml` | Build configuration (PEP 621). |
 | `DISCLAIMER.md` | Legal notice and ethical use policy. |

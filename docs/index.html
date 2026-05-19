@@ -112,6 +112,7 @@ $ export ANTHROPIC_API_KEY=sk-ant-...</pre>
 <tr><th>Variable</th><th>Tool</th><th>Purpose</th></tr>
 <tr><td><code>HIBP_API_KEY</code></td><td><code>search_breach</code></td><td>HaveIBeenPwned API key &mdash; <a href="https://haveibeenpwned.com/API/Key" target="_blank" rel="noopener">get one here</a></td></tr>
 <tr><td><code>IPINFO_TOKEN</code></td><td><code>search_ip</code></td><td>ipinfo.io token for higher rate limits</td></tr>
+<tr><td><code>IP2LOCATION_API_KEY</code></td><td><code>search_ip2location</code></td><td>IP2Location API key &mdash; <a href="https://www.ip2location.io/pricing" target="_blank" rel="noopener">get one here</a></td></tr>
 </table>
 </div>
 
@@ -257,6 +258,31 @@ $ export ANTHROPIC_API_KEY=sk-ant-...</pre>
 [+] Carrier: AT&amp;T
 [+] Line type: Mobile</pre>
 
+<hr>
+<h3>search_ip2location</h3>
+<p>Queries the <a href="https://www.ip2location.io" target="_blank" rel="noopener">IP2Location.io</a> API for enhanced IP intelligence. Returns geolocation (country, region, city, coordinates, ZIP), ISP, domain, and ASN. On the Security Plan, also detects whether the address is a VPN, proxy, Tor exit node, or datacenter host. Sponsored integration.</p>
+<p><b>MCP parameter:</b> <code>ip</code> (string, required) &mdash; IPv4 or IPv6 address</p>
+<p><b>Requires:</b> <code>IP2LOCATION_API_KEY</code> environment variable &mdash; <a href="https://www.ip2location.io/pricing" target="_blank" rel="noopener">get one here</a></p>
+<pre>$ openosint ip2location 8.8.8.8
+$ openosint ip2location 2001:4860:4860::8888
+$ openosint ip2location 8.8.8.8 -t 30</pre>
+<pre>[IP2Location] IP: 8.8.8.8
+[IP2Location] Country: United States (US)
+[IP2Location] Region: California
+[IP2Location] City: Mountain View
+[IP2Location] Latitude: 37.38605
+[IP2Location] Longitude: -122.08385
+[IP2Location] ZIP: 94035
+[IP2Location] ISP: Google LLC
+[IP2Location] Domain: google.com
+[IP2Location] ASN: AS15169 Google LLC
+[IP2Location] Proxy: No
+[IP2Location] VPN: No
+[IP2Location] TOR: No
+[IP2Location] Datacenter: Yes
+[IP2Location] Threat: clean</pre>
+<p>If a VPN, proxy, or Tor exit node is detected, the output appends: <code>&#9888;&#65039;  FLAGGED: VPN/Proxy/Tor detected</code></p>
+
 </div>
 
 <h2 id="commands">DIRECT CLI COMMANDS</h2>
@@ -326,6 +352,7 @@ $ openosint -v email target@example.com</pre>
 <tr><td><code>openosint/tools/generate_dorks.py</code></td><td>Google dork generator.</td></tr>
 <tr><td><code>openosint/tools/search_paste.py</code></td><td>Pastebin search.</td></tr>
 <tr><td><code>openosint/tools/search_phone.py</code></td><td>Phone intelligence.</td></tr>
+<tr><td><code>openosint/tools/search_ip2location.py</code></td><td>IP2Location enhanced IP intelligence.</td></tr>
 <tr><td><code>openosint/tools/exceptions.py</code></td><td>Shared exception hierarchy.</td></tr>
 <tr><td><code>pyproject.toml</code></td><td>Build configuration (PEP 621).</td></tr>
 <tr><td><code>DISCLAIMER.md</code></td><td>Legal notice and ethical use policy.</td></tr>
