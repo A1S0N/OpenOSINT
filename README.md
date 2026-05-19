@@ -618,7 +618,7 @@ $ claude
 |---|---|---|
 | Shodan | Network assets, open ports, CVEs | v2.4.0 |
 | VirusTotal | Malware detection, 70+ engines | v2.7.0 |
-| Censys | Open ports, services, certificate history | v2.9.0 |
+| Censys | Open ports, services, certificate history | v2.10.0 |
 
 ---
 
@@ -644,4 +644,4 @@ MIT License. See [LICENSE](LICENSE).
 
 ---
 
-*OpenOSINT 2.9.0 &mdash; May 18, 2026*
+*OpenOSINT 2.10.0 &mdash; May 19, 2026*
