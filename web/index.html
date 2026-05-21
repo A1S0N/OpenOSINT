@@ -278,6 +278,7 @@
   <!-- right actions -->
   <div class="flex items-center gap-1 flex-none">
     <button @click="toggleTheme()"
+            aria-label="Toggle theme"
             :title="isLight ? 'Switch to dark theme' : 'Switch to light theme'"
             class="w-8 h-8 flex items-center justify-center rounded-md text-muted hover:text-primary hover:bg-surface transition-colors">
       <!-- sun icon shown in dark mode -->
@@ -298,6 +299,7 @@
       </svg>
     </button>
     <button @click="showSettings = true"
+            aria-label="Settings"
             title="Settings"
             class="w-8 h-8 flex items-center justify-center rounded-md text-muted hover:text-primary hover:bg-surface transition-colors">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -306,6 +308,7 @@
       </svg>
     </button>
     <button @click="clearConversation()"
+            aria-label="Clear conversation"
             title="Clear conversation"
             :disabled="messages.length === 0"
             class="w-8 h-8 flex items-center justify-center rounded-md text-muted hover:text-primary hover:bg-surface disabled:opacity-25 disabled:cursor-not-allowed transition-colors">
@@ -434,6 +437,7 @@
     <div class="border border-app rounded-md flex items-end gap-2 px-3 py-2 transition-colors">
       <textarea
         id="chat-input"
+        aria-label="Message input"
         x-model="input"
         @keydown.enter.exact.prevent="sendMessage()"
         @input="autoResize($event.target)"

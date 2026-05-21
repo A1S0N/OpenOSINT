@@ -1,13 +1,8 @@
-# OPENOSINT(1) &mdash; General Commands Manual
-
-> **Web Interface** — Run `openosint web` to launch the AI chat interface in your browser.
-> Hosted version coming soon at openosint.tech/app
-
 <div align="center">
-  <img src="docs/logo.svg" alt="OpenOSINT" width="320">
-</div>
 
-<br>
+# OpenOSINT
+
+AI-powered OSINT agent · MCP server · CLI · Web interface
 
 [![Release](https://img.shields.io/github/v/release/OpenOSINT/OpenOSINT?label=release&style=flat-square)](https://github.com/OpenOSINT/OpenOSINT/releases)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/)
@@ -16,15 +11,21 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Sponsored by IP2Location](https://img.shields.io/badge/Sponsored%20by-IP2Location-0066CC?style=flat-square)](https://www.ip2location.com)
 
+</div>
+
 > ⚠️ **Legal Disclaimer**: OpenOSINT is intended for **legal and authorized use only**.
 > Users are solely responsible for ensuring their use complies with all applicable laws.
 > The authors accept no liability for misuse. See [DISCLAIMER.md](DISCLAIMER.md).
 
-<div align="center">
-  <img src="assets/demo.gif" alt="OpenOSINT demo" width="700">
-</div>
+### Web Interface
+> Run `openosint web` to launch the browser UI
 
-> *Web interface demo: run `openosint web` and open http://localhost:8080*
+![Web Demo](media/output/web-demo.gif)
+
+### Terminal / CLI
+> Run `openosint` for the interactive REPL or use direct CLI commands
+
+![CLI Demo](assets/demo.gif)
 
 ---
 
@@ -754,4 +755,4 @@ MIT License. See [LICENSE](LICENSE).
 
 ---
 
-*OpenOSINT 2.11.0 &mdash; May 19, 2026*
+*OpenOSINT 2.12.0 &mdash; May 21, 2026*

@@ -15,7 +15,6 @@ Set Theme "Dracula"
 Set Padding 20
 Set TypingSpeed 80ms
 Set PlaybackSpeed 0.9
-WindowBar Colorful
 
 # ── Setup ──────────────────────────────────────────────────────────────────
 Hide

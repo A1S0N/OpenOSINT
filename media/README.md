@@ -43,6 +43,30 @@ vhs media/tapes/install-quickstart.tape
 | `mcp-showcase.tape` | `claude mcp list` confirms registration, autonomous one-liner investigation | ~25s |
 | `install-quickstart.tape` | `pip install` → set API key → launch REPL | ~10s |
 
+## Record the web UI demo (Playwright)
+
+Captures an automated browser demo of the web interface — no manual interaction needed.
+
+```bash
+pip install "openosint[web]"
+playwright install chromium
+python media/record_demo.py
+```
+
+**Requires** `ffmpeg` for MP4/GIF conversion (`brew install ffmpeg`).  
+Without ffmpeg, the raw `.webm` and screenshots are still saved.
+
+**Outputs:**
+
+| File | Description |
+|------|-------------|
+| `media/output/web-demo.mp4` | Full demo video (H.264) |
+| `media/output/web-demo.gif` | Animated GIF (10 fps, palette-optimised) |
+| `media/screenshots/01-landing-dark.png` | Landing page — dark theme |
+| `media/screenshots/02-chat-response.png` | Chat with AI response |
+| `media/screenshots/03-landing-light.png` | Landing page — light theme |
+| `media/screenshots/04-settings.png` | Settings modal |
+
 ## Output
 
 `media/output/` is **git-ignored** — assets are generated locally, not committed.

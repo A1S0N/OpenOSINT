@@ -7,6 +7,23 @@ OpenOSINT adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
+## [2.12.0] — 2026-05-21
+
+### Added
+
+- Web interface (`openosint web`) — browser-based AI chat UI
+- Light/dark theme toggle in web UI
+- Ollama support in web UI for local inference
+- Demo recording script (`python media/record_demo.py`)
+- Web demo GIF and MP4
+
+### Changed
+
+- README: added web interface demo at top, restructured header with tagline and centered layout
+- Docs: added demo section with web and CLI demos side by side
+
+---
+
 ## [2.11.0] — 2026-05-19
 
 ### Added

@@ -18,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import re
 import shutil
 import time
 from pathlib import Path
@@ -510,6 +511,137 @@ async def _stream_ollama(messages: list[dict], ollama_host: str, ollama_model: s
 
 
 # ---------------------------------------------------------------------------
+# Demo chat — pre-scripted SSE stream, no API key required
+# ---------------------------------------------------------------------------
+
+async def _demo_chat_stream(message: str) -> AsyncIterator[dict]:
+    """Yield scripted SSE events that look like a real investigation."""
+
+    async def stream_text(text: str) -> AsyncIterator[dict]:
+        words = text.split(" ")
+        for i, word in enumerate(words):
+            chunk = word if i == len(words) - 1 else word + " "
+            yield {"type": "text", "content": chunk}
+            await asyncio.sleep(0.03)
+
+    msg_lower = message.lower()
+
+    # --- tools / availability query ---
+    if any(kw in msg_lower for kw in ("tool", "available", "what can")):
+        lines = [
+            "I have **11 OSINT tools** available for investigations:\n\n",
+            "**Identity:** `search_email`, `search_username`, `search_breach`\n\n",
+            "**Network:** `search_ip`, `search_whois`, `search_domain`, `search_ip2location`\n\n",
+            "**Recon:** `generate_dorks`, `search_paste`, `search_phone`, `search_censys`\n\n",
+            "Just give me a target — email address, username, domain, or IP.",
+        ]
+        for line in lines:
+            async for event in stream_text(line):
+                yield event
+        yield {"type": "done"}
+        return
+
+    # --- email investigation ---
+    email_match = re.search(r"[\w.+-]+@[\w-]+\.[a-z]{2,}", message)
+    if email_match or any(kw in msg_lower for kw in ("email", "investigate", "@")):
+        email = email_match.group(0) if email_match else "demo@example.com"
+        async for event in stream_text(f"Investigating **{email}**...\n\n"):
+            yield event
+
+        yield {"type": "tool_start", "tool": "search_email", "input": email}
+        await asyncio.sleep(1.5)
+        yield {
+            "type": "tool_result",
+            "tool": "search_email",
+            "output": (
+                "[+] Spotify       https://open.spotify.com/user/demo\n"
+                "[+] GitHub        https://github.com/demo\n"
+                "[+] Gravatar      https://gravatar.com/demo\n"
+                "[+] WordPress     https://wordpress.com/demo\n"
+                "[*] Holehe scan complete — 4 accounts found"
+            ),
+            "elapsed": 1.4,
+        }
+
+        yield {"type": "tool_start", "tool": "search_breach", "input": email}
+        await asyncio.sleep(1.2)
+        yield {
+            "type": "tool_result",
+            "tool": "search_breach",
+            "output": (
+                "[!] LinkedIn (2016-05-17) — Passwords, Email addresses\n"
+                "[!] Adobe (2013-10-04) — Passwords, Email addresses, Usernames\n"
+                "[*] 2 breach(es) found via HaveIBeenPwned"
+            ),
+            "elapsed": 1.1,
+        }
+
+        summary = (
+            f"## Summary\n\nTarget **{email}** has accounts on **4 platforms** "
+            "and appears in **2 known data breaches** (LinkedIn 2016, Adobe 2013). "
+            "Credential rotation strongly advised."
+        )
+        async for event in stream_text(summary):
+            yield event
+        yield {"type": "done"}
+        return
+
+    # --- IP investigation ---
+    ip_match = re.search(r"\b(\d{1,3}\.){3}\d{1,3}\b", message)
+    if ip_match or "ip" in msg_lower:
+        ip = ip_match.group(0) if ip_match else "8.8.8.8"
+
+        yield {"type": "tool_start", "tool": "search_ip", "input": ip}
+        await asyncio.sleep(1.0)
+        yield {
+            "type": "tool_result",
+            "tool": "search_ip",
+            "output": (
+                f"[+] IP: {ip}\n"
+                "[+] Hostname: dns.google\n"
+                "[+] Country: US — Mountain View, California\n"
+                "[+] Org: AS15169 Google LLC\n"
+                "[+] Timezone: America/Los_Angeles"
+            ),
+            "elapsed": 0.9,
+        }
+
+        yield {"type": "tool_start", "tool": "search_whois", "input": ip}
+        await asyncio.sleep(0.8)
+        yield {
+            "type": "tool_result",
+            "tool": "search_whois",
+            "output": (
+                f"[+] IP Range: 8.8.8.0/24\n"
+                "[+] Owner: Google LLC\n"
+                "[+] Abuse: network-abuse@google.com\n"
+                "[+] Country: US\n"
+                "[+] Registered: 2014-03-14"
+            ),
+            "elapsed": 0.7,
+        }
+
+        summary = (
+            f"**{ip}** is a Google public DNS server located in Mountain View, "
+            "California. Owned by Google LLC (AS15169). No threat indicators found."
+        )
+        async for event in stream_text(summary):
+            yield event
+        yield {"type": "done"}
+        return
+
+    # --- default ---
+    default_msg = (
+        "I can help you investigate **emails**, **usernames**, **domains**, "
+        "and **IP addresses** using 11 specialized OSINT tools. "
+        "What would you like to look into?"
+    )
+    async for event in stream_text(default_msg):
+        yield event
+    yield {"type": "done"}
+
+
+# ---------------------------------------------------------------------------
 # App factory
 # ---------------------------------------------------------------------------
 
@@ -708,6 +840,25 @@ def create_app() -> FastAPI:
                 os.environ[k.strip()] = v_str
         env_path.write_text("\n".join(f"{k}={v}" for k, v in existing.items()) + "\n")
         return {"status": "ok"}
+
+    # ------------------------------------------------------------------
+    # POST /api/demo/chat  — pre-scripted demo stream, no API key needed
+    # ------------------------------------------------------------------
+
+    @app.post("/api/demo/chat")
+    async def demo_chat(req: ChatRequest):
+        async def generate():
+            async for event in _demo_chat_stream(req.message):
+                yield f"data: {json.dumps(event)}\n\n"
+
+        return StreamingResponse(
+            generate(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     # ------------------------------------------------------------------
     # Static mounts — docs, then catch-all for frontend
