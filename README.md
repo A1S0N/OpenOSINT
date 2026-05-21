@@ -13,6 +13,7 @@
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/)
 [![License MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![MCP](https://img.shields.io/badge/protocol-MCP-blueviolet?style=flat-square)](https://modelcontextprotocol.io/)
+[![Sponsored by IP2Location](https://img.shields.io/badge/sponsored%20by-IP2Location.io-FF6B35?style=flat-square)](https://www.ip2location.io)
 [![GitHub Stars](https://img.shields.io/github/stars/OpenOSINT/OpenOSINT?style=flat-square)](https://github.com/OpenOSINT/OpenOSINT/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/OpenOSINT/OpenOSINT?style=flat-square)](https://github.com/OpenOSINT/OpenOSINT/network/members)
 
@@ -488,9 +489,7 @@ Set `ANTHROPIC_API_KEY` (and optionally `HIBP_API_KEY`, `IPINFO_TOKEN`) in a `.e
 
 OpenOSINT is free and open source. Development is supported by:
 
-<a href="https://www.ip2location.io" target="_blank">
-  <img src="https://www.ip2location.io/img/ip2location-logo.png" alt="IP2Location" height="40" />
-</a>
+[![Sponsored by IP2Location](https://img.shields.io/badge/sponsored%20by-IP2Location.io-FF6B35?style=flat-square)](https://www.ip2location.io)
 
 **[IP2Location.io](https://www.ip2location.io)** — Enhanced IP geolocation and threat intelligence API.
 Powers the `search_ip2location` tool with VPN, proxy, Tor, and datacenter detection.
