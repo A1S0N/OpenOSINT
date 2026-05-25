@@ -511,9 +511,21 @@ Powers the `search_ip2location` tool with VPN, proxy, Tor, and datacenter detect
 
 Issues and pull requests are welcome. Please read [DISCLAIMER.md](DISCLAIMER.md) before contributing.
 
+## Maintainer
+
+**Tommaso Bertocchi**  
+- X (personal): https://x.com/SonoTommy_  
+- X (OpenOSINT): https://x.com/openosint_oss  
+- LinkedIn: https://www.linkedin.com/company/openosintoss  
+- Email: openosint@yahoo.com
+
 ## License
 
-MIT — see [LICENSE](LICENSE).
+OpenOSINT is open source under the [MIT License](./LICENSE) — free for personal, academic, and open source use.
+
+For use in **closed-source commercial products**, a [Commercial License](./COMMERCIAL-LICENSE.md) is available starting at $9/month.
+
+→ [View Commercial License details](./COMMERCIAL-LICENSE.md)
 
 ---
 
