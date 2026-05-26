@@ -103,7 +103,7 @@ Store all keys in a `.env` file at the project root (copy `.env.example`). `pyth
 
 | Package | Purpose | Install |
 |---------|---------|---------|
-| `ollama` | Local LLM backend (no API key) | `pip install ollama` |
+| `ollama` | Local LLM backend (no API key) | `pip install ollama` *(Python client only — also install the [Ollama runtime](https://ollama.com))* |
 | `shodan` | Shodan API client | `pip install shodan` |
 | `reportlab` | PDF report export | `pip install reportlab` |
 | `censys` | Censys API client | `pip install censys` |
@@ -406,8 +406,14 @@ Browser-based AI chat interface with streaming tool output, inline result cards,
 pip install "openosint[web]"
 openosint web
 
-# Use Ollama for local inference (no API key)
-ollama pull llama3.2
+# Use Ollama for fully local inference (no API key)
+# Step 1: install the Ollama runtime (separate from the Python library)
+#   macOS/Linux:  curl -fsSL https://ollama.com/install.sh | sh
+#   Windows:      https://ollama.com/download/windows
+# Step 2: start Ollama and pull a model
+ollama serve          # start in a terminal (runs automatically as a service on some platforms)
+ollama pull llama3.2  # download the model (~2 GB)
+# Step 3: launch OpenOSINT and switch to Ollama
 openosint web
 # Settings -> Ollama (local) -> set model to llama3.2
 ```

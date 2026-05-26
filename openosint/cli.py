@@ -47,6 +47,26 @@ _DIVIDER = "=" * 60
 
 
 # ---------------------------------------------------------------------------
+# Ollama pre-flight check
+# ---------------------------------------------------------------------------
+
+
+def _check_ollama_server(host: str) -> bool:
+    """Return True if the Ollama HTTP server is accepting connections."""
+    import socket
+    import urllib.parse
+
+    parsed = urllib.parse.urlparse(host)
+    hostname = parsed.hostname or "localhost"
+    port = parsed.port or 11434
+    try:
+        with socket.create_connection((hostname, port), timeout=3):
+            return True
+    except OSError:
+        return False
+
+
+# ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
 
@@ -682,6 +702,32 @@ async def _async_main() -> None:
     # Await directly — run_repl() is a sync wrapper that calls asyncio.run()
     # internally, which raises RuntimeError when called from a running event loop.
     if args.command in (None, "shell"):
+        if getattr(args, "provider", "anthropic") == "ollama":
+            ollama_host = getattr(args, "ollama_host", "http://localhost:11434")
+            if not _check_ollama_server(ollama_host):
+                print(
+                    f"[ERROR] Ollama server is not running at {ollama_host}.",
+                    file=sys.stderr,
+                )
+                print(
+                    "Make sure Ollama is installed (https://ollama.com) and running:",
+                    file=sys.stderr,
+                )
+                print(
+                    "  macOS/Linux:  curl -fsSL https://ollama.com/install.sh | sh",
+                    file=sys.stderr,
+                )
+                print(
+                    "  Windows:      https://ollama.com/download/windows",
+                    file=sys.stderr,
+                )
+                print("", file=sys.stderr)
+                print("  ollama serve          # start in terminal", file=sys.stderr)
+                print("  ollama pull llama3.2  # pull a model first", file=sys.stderr)
+                print("", file=sys.stderr)
+                print("Then retry:  openosint --provider ollama", file=sys.stderr)
+                sys.exit(1)
+
         from openosint.repl import OpenOSINTRepl
 
         repl = OpenOSINTRepl(

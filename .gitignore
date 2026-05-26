@@ -141,9 +141,8 @@ testuser.txt
 # openosint/index.html.txt is 0 bytes — accidentally created stub
 openosint/index.html.txt
 
-# Scaffolded / early-draft web UI
-# web/ is an 836-line draft superseded by the embedded template in openosint/web_server.py
-web/
+# Scaffolded / early-draft web UI at project root (superseded by openosint/web/)
+/web/
 
 # Legacy root-level VHS tape
 # openosint.tape at repo root is superseded by the organized media/tapes/ collection

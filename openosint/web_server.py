@@ -53,8 +53,12 @@ from openosint.tools.search_username import run_username_osint
 from openosint.tools.search_virustotal import run_virustotal_osint
 from openosint.tools.search_whois import run_whois_osint
 
-_VERSION = "2.13.0"
+_VERSION = "2.16.0"
 _ROOT = Path(__file__).parent.parent
+
+# Web assets: prefer the package-relative path (pip install) with project-root fallback (dev/editable)
+_PACKAGE_WEB = Path(__file__).parent / "web"
+_WEB_DIR = _PACKAGE_WEB if _PACKAGE_WEB.exists() else _ROOT / "web"
 
 # ---------------------------------------------------------------------------
 # Tool catalog — drives both the REST API and the frontend sidebar
@@ -922,17 +926,21 @@ def create_app() -> FastAPI:
     if docs_path.exists():
         app.mount("/docs", StaticFiles(directory=str(docs_path), html=True), name="docs")
 
-    web_static = _ROOT / "web" / "static"
+    web_static = _WEB_DIR / "static"
     if web_static.exists():
         app.mount("/static", StaticFiles(directory=str(web_static)), name="static")
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_frontend(full_path: str):
-        index = _ROOT / "web" / "index.html"
+        index = _WEB_DIR / "index.html"
         if index.exists():
             return HTMLResponse(index.read_text())
         return HTMLResponse(
-            "<h1>OpenOSINT</h1><p>web/index.html not found.</p>",
+            "<h1>OpenOSINT</h1>"
+            "<p><strong>web/index.html not found.</strong></p>"
+            "<p>If you installed via pip, this is a packaging issue — please report it at "
+            "https://github.com/OpenOSINT/OpenOSINT/issues</p>"
+            "<p>If running from source, make sure <code>openosint/web/index.html</code> exists.</p>",
             status_code=404,
         )
 

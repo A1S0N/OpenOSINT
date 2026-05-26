@@ -631,7 +631,19 @@ class OllamaAgent:
         except ImportError:
             return AgentResponse(
                 content="",
-                error=("'ollama' library is not installed. Install it with: pip install ollama"),
+                error=(
+                    "The 'ollama' Python library is not installed.\n"
+                    "Install it with:  pip install ollama\n\n"
+                    "NOTE: pip install ollama only installs the Python client — "
+                    "it does NOT install the Ollama runtime binary.\n"
+                    "You must also install the Ollama application separately:\n"
+                    "  macOS/Linux:  curl -fsSL https://ollama.com/install.sh | sh\n"
+                    "  Windows:      https://ollama.com/download/windows\n\n"
+                    "After installing, start Ollama and pull a model:\n"
+                    "  ollama serve\n"
+                    "  ollama pull llama3.2\n"
+                    "Then retry:  openosint --provider ollama"
+                ),
             )
 
         self.history.append({"role": "user", "content": prompt})
@@ -656,5 +668,21 @@ class OllamaAgent:
                     return AgentResponse(content=text, tool_calls=ctx.tool_calls)
                 await _process_ollama_tool_turn(ctx, msg)
         except Exception as exc:
+            err_str = str(exc)
+            # Surface a clear, actionable error when the Ollama server is not running
+            if any(kw in err_str.lower() for kw in ("connection refused", "connect error", "failed to connect", "cannot connect")):
+                logger.debug("Ollama server unreachable at %s: %s", self.host, err_str)
+                return AgentResponse(
+                    content="",
+                    error=(
+                        f"[ERROR] Ollama server is not running at {self.host}\n\n"
+                        "Make sure Ollama is installed (https://ollama.com) and running:\n"
+                        "  macOS/Linux:  curl -fsSL https://ollama.com/install.sh | sh\n"
+                        "  Windows:      https://ollama.com/download/windows\n\n"
+                        "  ollama serve          # start in terminal\n"
+                        "  ollama pull llama3.2  # pull a model first\n\n"
+                        "Then retry:  openosint --provider ollama"
+                    ),
+                )
             logger.exception("Unexpected error in Ollama agent loop.")
-            return AgentResponse(content="", error=str(exc))
+            return AgentResponse(content="", error=err_str)
